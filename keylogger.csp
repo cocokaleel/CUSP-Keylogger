@@ -1,8 +1,13 @@
 .EQU KEYBOARD_STATUS, $000
 .EQU KEYBOARD_DATA, $001
-
-POLL_KEYBD:	INB KEYBOARD_STATUS
-	JGE POLL_KEYBD
-	INB KEYBOARD_DATA
-	STA $D00
+.EQU STORE_INDEX, $D00
+.EQU CAP, $009
+	LDX#$000
+POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
+	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
+	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
+	STA+ STORE_INDEX; load the key pressed to the appropriate index
+	ADX#$001; add one to the XR
+	CMX# CAP; check if the XR is bigger than the biggest size
+	JLE POLL_KEYBD; if the XR is smaller than the cap, go back
 	HLT
