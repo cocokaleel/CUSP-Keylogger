@@ -3,17 +3,18 @@ LINE ADDR CONTENTS SOURCE LINE
   2.              .EQU KEYBOARD_DATA, $001
   3.              .EQU STORE_INDEX, $D00
   4.              .EQU CAP, $009
-  5.  000 010000  	LDX#$000
-  6.  001 702000  POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
-  7.  002 4B2001  	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
-  8.  003 702001  	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
-  9.  004 044D00  	STA+ STORE_INDEX; load the key pressed to the appropriate index
- 10.  005 110001  	ADX#$001; add one to the XR
- 11.  006 210009  	CMX# CAP; check if the XR is bigger than the biggest size
- 12.  007 4C2001  	JLE POLL_KEYBD; if the XR is smaller than the cap, go back
- 13.  008 FFFFFF  HALT:	HLT
+  5.              .EQU G, $067
+  6.  000 010000  	LDX#$000
+  7.  001 702000  POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
+  8.  002 4B2001  	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
+  9.  003 702001  	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
+ 10.  004 044D00  	STA+ STORE_INDEX; load the key pressed to the appropriate index
+ 11.  005 110001  	ADX#$001; add one to the XR
+ 12.  006 200067  	CMA# G; check if the XR is bigger than the biggest size
+ 13.  007 492001  	JNE POLL_KEYBD; if the XR is smaller than the cap, go back
+ 14.  008 FFFFFF  	HLT
 
                      SYMBOL TABLE CONTENTS
 
-000009 = CAP             000008 = HALT            000001 = KEYBOARD_DATA   
+000009 = CAP             000067 = G               000001 = KEYBOARD_DATA   
 000000 = KEYBOARD_STATUS 000001 = POLL_KEYBD      000D00 = STORE_INDEX     
