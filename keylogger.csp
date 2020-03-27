@@ -1,15 +1,51 @@
 	.EQU KEYBOARD_STATUS, $000
 	.EQU KEYBOARD_DATA, $001
 	.EQU STORE_INDEX, $D00
-	.EQU CAP, $009
-	.EQU G, $067; the value of G in hex
-
+NEW_CHAR_LOC:	.WORD
 	LDX#$000
 POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
 	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
 	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
-	STA+ STORE_INDEX; load the key pressed to the appropriate index
+	STC STORE_INDEX; load the key pressed to the appropriate index
 	ADX#$001; add one to the XR
-	CMA# G; compare accumulator to the value G
-	JNE POLL_KEYBD; if the key pressed is G
-	HLT
+CHECK_LAST_9: 	STX NEW_CHAR_LOC
+	SBX 9
+	LDC STORE_INDEX
+	CMA# 'g'; compare accumulator to the value G
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'e'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 't'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# ' '
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'p'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'w'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'n'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'e'
+	JNE BREAK_LOOP
+	ADX#$001
+	LDC STORE_INDEX
+	CMA# 'd'
+	JNE BREAK_LOOP
+	JEQ HALT; if the key pressed is G, HALT program
+BREAK_LOOP:	LDX NEW_CHAR_LOC
+	JMP POLL_KEYBD
+HALT:	HLT

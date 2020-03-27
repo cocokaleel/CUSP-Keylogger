@@ -4,18 +4,63 @@ LINE ADDR CONTENTS SOURCE LINE
   3.              	.EQU STORE_INDEX, $D00
   4.              	.EQU CAP, $009
   5.              	.EQU G, $067; the value of G in hex
-  6.              
-  7.  000 010000  	LDX#$000
-  8.  001 702000  POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
-  9.  002 4B2001  	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
- 10.  003 702001  	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
- 11.  004 044D00  	STA+ STORE_INDEX; load the key pressed to the appropriate index
- 12.  005 110001  	ADX#$001; add one to the XR
- 13.  006 200067  	CMA# G; compare accumulator to the value G
- 14.  007 492001  	JNE POLL_KEYBD; if the key pressed is G
- 15.  008 FFFFFF  	HLT
+  6.              	.EQU E, $065
+  7.  000 000000  COMP_CHAR:	.WORD
+  8.  001 000000  NEW_CHAR_LOC:	.WORD
+  9.              
+ 10.  002 010000  	LDX#$000
+ 11.  003 702000  POLL_KEYBD:	INB KEYBOARD_STATUS; read in keyboard status
+ 12.  004 4B2003  	JGE POLL_KEYBD; if the keyboard is unused, go back to check again
+ 13.  005 702001  	INB KEYBOARD_DATA; read keyboard data from port $001 to accumulator
+ 14.  006 512D00  	STC STORE_INDEX; load the key pressed to the appropriate index
+ 15.  007 110001  	ADX#$001; add one to the XR
+ 16.              
+ 17.  008 052001  CHECK_LAST_9: 	STX NEW_CHAR_LOC
+ 18.  009 152009  	SBX 9
+ 19.  00A 502D00  	LDC STORE_INDEX
+ 20.  00B 200067  	CMA# 'g'; compare accumulator to the value G
+ 21.  00C 49202E  	JNE BREAK_LOOP
+ 22.  00D 110001  	ADX#$001
+ 23.  00E 502D00  	LDC STORE_INDEX
+ 24.  00F 200065  	CMA# 'e'
+ 25.  010 49202E  	JNE BREAK_LOOP
+ 26.  011 110001  	ADX#$001
+ 27.  012 502D00  	LDC STORE_INDEX
+ 28.  013 200074  	CMA# 't'
+ 29.  014 49202E  	JNE BREAK_LOOP
+ 30.  015 110001  	ADX#$001
+ 31.  016 502D00  	LDC STORE_INDEX
+ 32.  017 200020  	CMA# ' '
+ 33.  018 49202E  	JNE BREAK_LOOP
+ 34.  019 110001  	ADX#$001
+ 35.  01A 502D00  	LDC STORE_INDEX
+ 36.  01B 200070  	CMA# 'p'
+ 37.  01C 49202E  	JNE BREAK_LOOP
+ 38.  01D 110001  	ADX#$001
+ 39.  01E 502D00  	LDC STORE_INDEX
+ 40.  01F 200077  	CMA# 'w'
+ 41.  020 49202E  	JNE BREAK_LOOP
+ 42.  021 110001  	ADX#$001
+ 43.  022 502D00  	LDC STORE_INDEX
+ 44.  023 20006E  	CMA# 'n'
+ 45.  024 49202E  	JNE BREAK_LOOP
+ 46.  025 110001  	ADX#$001
+ 47.  026 502D00  	LDC STORE_INDEX
+ 48.  027 200065  	CMA# 'e'
+ 49.  028 49202E  	JNE BREAK_LOOP
+ 50.  029 110001  	ADX#$001
+ 51.  02A 502D00  	LDC STORE_INDEX
+ 52.  02B 200064  	CMA# 'd'
+ 53.  02C 49202E  	JNE BREAK_LOOP
+ 54.              
+ 55.  02D 482030  	JEQ HALT; if the key pressed is G, HALT program
+ 56.  02E 012001  BREAK_LOOP:	LDX NEW_CHAR_LOC
+ 57.  02F 402003  	JMP POLL_KEYBD
+ 58.  030 FFFFFF  HALT:	HLT
 
                      SYMBOL TABLE CONTENTS
 
-000009 = CAP             000067 = G               000001 = KEYBOARD_DATA   
-000000 = KEYBOARD_STATUS 000001 = POLL_KEYBD      000D00 = STORE_INDEX     
+00002E = BREAK_LOOP      000009 = CAP             000008 = CHECK_LAST_9    
+000000 = COMP_CHAR       000065 = E               000067 = G               
+000030 = HALT            000001 = KEYBOARD_DATA   000000 = KEYBOARD_STATUS 
+000001 = NEW_CHAR_LOC    000003 = POLL_KEYBD      000D00 = STORE_INDEX     
